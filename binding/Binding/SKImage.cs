@@ -188,10 +188,8 @@ namespace SkiaSharp
 			if (data.Length == 0)
 				throw new ArgumentException ("The data buffer was empty.");
 
-			fixed (byte* b = data) {
-				using (var skdata = SKData.Create ((IntPtr)b, data.Length)) {
-					return FromEncodedData (skdata);
-				}
+			using (var skdata = SKData.CreateCopy (data)) {
+				return FromEncodedData (skdata);
 			}
 		}
 
@@ -202,10 +200,8 @@ namespace SkiaSharp
 			if (data.Length == 0)
 				throw new ArgumentException ("The data buffer was empty.");
 
-			fixed (byte* b = data) {
-				using (var skdata = SKData.Create ((IntPtr)b, data.Length)) {
-					return FromEncodedData (skdata);
-				}
+			using (var skdata = SKData.CreateCopy (data)) {
+				return FromEncodedData (skdata);
 			}
 		}
 
@@ -214,19 +210,10 @@ namespace SkiaSharp
 			if (data == null)
 				throw new ArgumentNullException (nameof (data));
 
-			using (var codec = SKCodec.Create (data)) {
-				if (codec == null)
+			using (var skdata = SKData.Create (data)) {
+				if (skdata == null)
 					return null;
-
-				var bitmap = SKBitmap.Decode (codec, codec.Info);
-				if (bitmap == null)
-					return null;
-
-				bitmap.SetImmutable ();
-				return FromPixels (bitmap.PeekPixels (), delegate {
-					bitmap.Dispose ();
-					bitmap = null;
-				});
+				return FromEncodedData (skdata);
 			}
 		}
 
@@ -235,19 +222,10 @@ namespace SkiaSharp
 			if (data == null)
 				throw new ArgumentNullException (nameof (data));
 
-			using (var codec = SKCodec.Create (data)) {
-				if (codec == null)
+			using (var skdata = SKData.Create (data)) {
+				if (skdata == null)
 					return null;
-
-				var bitmap = SKBitmap.Decode (codec, codec.Info);
-				if (bitmap == null)
-					return null;
-
-				bitmap.SetImmutable ();
-				return FromPixels (bitmap.PeekPixels (), delegate {
-					bitmap.Dispose ();
-					bitmap = null;
-				});
+				return FromEncodedData (skdata);
 			}
 		}
 
@@ -256,19 +234,10 @@ namespace SkiaSharp
 			if (filename == null)
 				throw new ArgumentNullException (nameof (filename));
 
-			using (var codec = SKCodec.Create (filename)) {
-				if (codec == null)
+			using (var skdata = SKData.Create (filename)) {
+				if (skdata == null)
 					return null;
-
-				var bitmap = SKBitmap.Decode (codec, codec.Info);
-				if (bitmap == null)
-					return null;
-
-				bitmap.SetImmutable ();
-				return FromPixels (bitmap.PeekPixels (), delegate {
-					bitmap.Dispose ();
-					bitmap = null;
-				});
+				return FromEncodedData (skdata);
 			}
 		}
 
@@ -516,6 +485,8 @@ namespace SkiaSharp
 		public SKColorSpace ColorSpace => GetObject<SKColorSpace> (SkiaApi.sk_image_get_colorspace (Handle));
 		public bool IsAlphaOnly => SkiaApi.sk_image_is_alpha_only (Handle);
 		public SKData EncodedData => GetObject<SKData> (SkiaApi.sk_image_ref_encoded (Handle));
+
+		public SKShader ToShader () => ToShader (SKShaderTileMode.Clamp, SKShaderTileMode.Clamp);
 
 		public SKShader ToShader (SKShaderTileMode tileX, SKShaderTileMode tileY)
 		{

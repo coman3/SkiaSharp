@@ -47,20 +47,20 @@ namespace SkiaSharp.Views.Mac
 		{
 			WantsBestResolutionOpenGLSurface = true;
 
-			var attrs = new object[]
+			var attrs = new NSOpenGLPixelFormatAttribute[]
 			{
-				//NSOpenGLPixelFormatAttribute.OpenGLProfile, NSOpenGLProfile.VersionLegacy,
+				//NSOpenGLPixelFormatAttribute.OpenGLProfile, (NSOpenGLPixelFormatAttribute)NSOpenGLProfile.VersionLegacy,
 				NSOpenGLPixelFormatAttribute.Accelerated,
 				NSOpenGLPixelFormatAttribute.DoubleBuffer,
 				NSOpenGLPixelFormatAttribute.Multisample,
 
-				NSOpenGLPixelFormatAttribute.ColorSize, 32,
-				NSOpenGLPixelFormatAttribute.AlphaSize, 8,
-				NSOpenGLPixelFormatAttribute.DepthSize, 24,
-				NSOpenGLPixelFormatAttribute.StencilSize, 8,
-				NSOpenGLPixelFormatAttribute.SampleBuffers, 1,
-				NSOpenGLPixelFormatAttribute.Samples, 4,
-				0,
+				NSOpenGLPixelFormatAttribute.ColorSize, (NSOpenGLPixelFormatAttribute)32,
+				NSOpenGLPixelFormatAttribute.AlphaSize, (NSOpenGLPixelFormatAttribute)8,
+				NSOpenGLPixelFormatAttribute.DepthSize, (NSOpenGLPixelFormatAttribute)24,
+				NSOpenGLPixelFormatAttribute.StencilSize, (NSOpenGLPixelFormatAttribute)8,
+				NSOpenGLPixelFormatAttribute.SampleBuffers, (NSOpenGLPixelFormatAttribute)1,
+				NSOpenGLPixelFormatAttribute.Samples, (NSOpenGLPixelFormatAttribute)4,
+				(NSOpenGLPixelFormatAttribute)0,
 			};
 			PixelFormat = new NSOpenGLPixelFormat(attrs);
 		}
@@ -92,8 +92,12 @@ namespace SkiaSharp.Views.Mac
 				renderTarget?.Dispose();
 				Gles.glGetIntegerv(Gles.GL_FRAMEBUFFER_BINDING, out var framebuffer);
 				Gles.glGetIntegerv(Gles.GL_STENCIL_BITS, out var stencil);
+				Gles.glGetIntegerv(Gles.GL_SAMPLES, out var samples);
+				var maxSamples = context.GetMaxSurfaceSampleCount(colorType);
+				if (samples > maxSamples)
+					samples = maxSamples;
 				var glInfo = new GRGlFramebufferInfo((uint)framebuffer, colorType.ToGlSizedFormat());
-				renderTarget = new GRBackendRenderTarget((int)size.Width, (int)size.Height, context.GetMaxSurfaceSampleCount(colorType), stencil, glInfo);
+				renderTarget = new GRBackendRenderTarget((int)size.Width, (int)size.Height, samples, stencil, glInfo);
 
 				// create the surface
 				surface?.Dispose();

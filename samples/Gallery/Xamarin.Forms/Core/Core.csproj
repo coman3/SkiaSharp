@@ -6,12 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Xamarin.Forms" Version="4.0.0.540366" />
+    <PackageReference Include="Xamarin.Forms" Version="4.2.0.910310" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\binding\HarfBuzzSharp.NetStandard\HarfBuzzSharp.NetStandard.csproj" />
-    <ProjectReference Include="..\..\..\..\binding\SkiaSharp.NetStandard\SkiaSharp.NetStandard.csproj" />
+    <ProjectReference Include="..\..\..\..\binding\HarfBuzzSharp\HarfBuzzSharp.csproj" />
+    <ProjectReference Include="..\..\..\..\binding\SkiaSharp\SkiaSharp.csproj" />
     <ProjectReference Include="..\..\..\..\source\SkiaSharp.HarfBuzz\SkiaSharp.HarfBuzz\SkiaSharp.HarfBuzz.csproj" />
     <ProjectReference Include="..\..\..\..\source\SkiaSharp.Views.Forms\SkiaSharp.Views.Forms\SkiaSharp.Views.Forms.csproj" />
   </ItemGroup>
